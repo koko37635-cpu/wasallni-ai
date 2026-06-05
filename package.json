@@ -1,0 +1,11 @@
+{
+  "name": "wasallni-ai",
+  "version": "1.0.0",
+  "description": "Wasallni AI - Analytics & Forecasting Module",
+  "main": "main.py",
+  "scripts": {
+    "dev": "python main.py",
+    "start": "python main.py",
+    "test": "pytest"
+  }
+}
