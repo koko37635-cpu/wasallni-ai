@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException
-from models.schemas import DailyReportRequest
+from fastapi import APIRouter
 from services.analytics import analytics_service
 
-router = APIRouter()
+router = APIRouter(prefix="/api/analytics", tags=["analytics"])
 
 @router.get("/daily-report")
 async def get_daily_report(branch_id: str = None):
-    """Get daily analytics report"""
+    """
+    احصل على التقرير اليومي
+    """
     try:
         report = analytics_service.generate_daily_report(branch_id)
         return {
@@ -14,11 +15,13 @@ async def get_daily_report(branch_id: str = None):
             'data': report
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {'success': False, 'error': str(e)}
 
 @router.get("/branches-performance")
 async def get_branches_performance():
-    """Get performance metrics for all branches"""
+    """
+    احصل على أداء جميع الفروع
+    """
     try:
         performance = analytics_service.get_branch_performance()
         return {
@@ -26,16 +29,18 @@ async def get_branches_performance():
             'data': performance
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {'success': False, 'error': str(e)}
 
 @router.get("/sales-trends")
-async def get_sales_trends(days: int = 30):
-    """Get sales trends"""
+async def get_sales_trends(days: int = 30, branch_id: str = None):
+    """
+    احصل على اتجاهات المبيعات
+    """
     try:
-        trends = analytics_service.get_sales_trends(days)
+        trends = analytics_service.get_sales_trends(days, branch_id)
         return {
             'success': True,
             'data': trends
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {'success': False, 'error': str(e)}

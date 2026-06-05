@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from models.schemas import ForecastRequest, ForecastResponse
 from services.forecasting import forecasting_service
 
-router = APIRouter()
+router = APIRouter(prefix="/api/forecasting", tags=["forecasting"])
 
 @router.post("/forecast")
-async def forecast(request: ForecastRequest) -> dict:
-    """Get demand forecast for a product"""
+async def forecast(request: ForecastRequest):
+    """
+    التنبؤ بالاستهلاك للـ N يوم القادمة
+    """
     try:
         forecast_data = forecasting_service.forecast_demand(
             request.product_id,
@@ -17,11 +19,13 @@ async def forecast(request: ForecastRequest) -> dict:
             'data': forecast_data
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {'success': False, 'error': str(e)}
 
 @router.get("/recommend/{product_id}")
 async def recommend_purchase(product_id: str, current_stock: float):
-    """Get purchase recommendation for a product"""
+    """
+    احصل على توصيات الشراء
+    """
     try:
         recommendation = forecasting_service.recommend_purchase(
             product_id,
@@ -36,7 +40,7 @@ async def recommend_purchase(product_id: str, current_stock: float):
             return {
                 'success': True,
                 'data': None,
-                'message': 'No purchase needed at this time'
+                'message': 'لا توجد حاجة لشراء في الوقت الحالي'
             }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return {'success': False, 'error': str(e)}

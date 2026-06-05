@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from routers import forecasting, anomaly, analytics
 
 load_dotenv()
 
 app = FastAPI(
     title="Wasallni AI",
-    description="AI Analytics & Forecasting API",
+    description="AI Analytics & Forecasting API for Restaurant Management",
     version="1.0.0"
 )
 
@@ -22,17 +23,24 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Wasallni AI Service Running"}
+    return {
+        "message": "Wasallni AI Service Running",
+        "version": "1.0.0",
+        "endpoints": {
+            "forecasting": "/docs#/forecasting",
+            "anomaly": "/docs#/anomaly",
+            "analytics": "/docs#/analytics"
+        }
+    }
 
 @app.get("/health")
 async def health():
-    return {"status": "OK"}
+    return {"status": "OK", "service": "AI"}
 
-# Routes will be imported here
-# from routers import forecasting, analytics, detection
-# app.include_router(forecasting.router, prefix="/api/forecasting", tags=["forecasting"])
-# app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])
-# app.include_router(detection.router, prefix="/api/detection", tags=["detection"])
+# Include routers
+app.include_router(forecasting.router)
+app.include_router(anomaly.router)
+app.include_router(analytics.router)
 
 if __name__ == "__main__":
     import uvicorn
